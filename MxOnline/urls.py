@@ -18,6 +18,8 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from django.views.generic import TemplateView   #引入django自带的TemplateView,用于处理静态文件
+
 
 # 引入xadmin
 import xadmin
@@ -25,5 +27,7 @@ import xadmin
 urlpatterns = [
     # url(r'^admin/', admin.site.urls),
     url(r'^xadmin/', xadmin.site.urls),    # 把默认的admin 换成 xadmin
+    url(r'^$', TemplateView.as_view(template_name="index.html"), name="index"),
+    url(r'^login/$', TemplateView.as_view(template_name="login.html"), name="login"),
 
 ]

@@ -142,6 +142,7 @@ USE_TZ = False  #修改为False（本地时间），否则django在数据库存�
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
 # 手动指定static的位置
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
