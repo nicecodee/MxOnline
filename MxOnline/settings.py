@@ -36,14 +36,20 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
+
+# 重载AUTHENTICATION_BACKENDS变量
+AUTHENTICATION_BACKENDS = (
+    'users.views.CustomBackend',
+)
+
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
+    'django.contrib.sessions',      # django自带的session机制
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'users',
@@ -51,7 +57,8 @@ INSTALLED_APPS = [
     'organizations',
     'operations',
     'xadmin',       #引入xadmin
-    'crispy_forms'  # 引入xadmin的依赖包(注意中间要用下划线）
+    'crispy_forms',  # 引入xadmin的依赖包(注意中间要用下划线）
+    'captcha',      #第三方图片验证码生成器
 ]
 
 # 手动重载AUTH_USER_MODEL
@@ -152,6 +159,16 @@ STATICFILES_DIRS = [
 '''
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
+
+
+# 设置邮箱的发送方
+EMAIL_HOST = 'smtp.sina.com'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = 'nicekidee@sina.com'
+EMAIL_FROM = 'nicekidee@sina.com'
+EMAIL_HOST_PASSWORD = 'Banana@001'
+EMAIL_USE_TLS = False
+
 
 
 '''
