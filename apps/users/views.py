@@ -40,6 +40,10 @@ class RegisterView(View):
         if register_form.is_valid():
             username = request.POST.get("email", "")
             password = request.POST.get("password", "")
+            user_count = UserProfile.objects.filter(email=username).count()
+            if user_count != 0:
+                return render(request, "register.html", \
+                              {'register_form': register_form, 'msg': '该邮箱已被注册，请使用其他邮箱!'})
             user = UserProfile()
             user.username = username
             user.email = username
@@ -84,7 +88,9 @@ class ActivateUserView(View):
                 user = UserProfile.objects.get(email=email)  # 根据邮箱找到用户
                 user.is_active = 1  # 激活该用户（也可设为 True)
                 user.save()
-        return render(request, 'login.html', {'msg':'用户已成功激活，欢迎登录!'})
+            return render(request, 'login.html', {'msg': '用户已成功激活，欢迎登录!'})
+        return render(request, 'activate_fail.html')
+
 
 
 '''自定义视图函数'''
