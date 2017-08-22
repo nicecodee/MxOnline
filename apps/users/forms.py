@@ -27,3 +27,13 @@ class RegisterForm(forms.Form):
     captcha = CaptchaField(error_messages={'invalid':u'验证码错误!'})
 
 
+# 忘记密码表单
+class ForgetPwdForm(forms.Form):
+    email = forms.EmailField(required=True)
+    captcha = CaptchaField(error_messages={'invalid':u'验证码错误!'})
+
+
+# 重置密码表单
+class PwdResetForm(forms.Form):
+    password1 = forms.CharField(required=True, min_length=6)
+    password2 = forms.CharField(required=True, min_length=6)

@@ -28,7 +28,7 @@ def generate_random_str(randomlength=8):
 
 
 # 发送带有验证码的邮件
-def send_register_email(email, send_type="register"):     # 0 表示发送注册邮件，1 表示发送找回密码邮件
+def send_email_to_user(email, send_type="register"):     # 0 表示发送注册邮件，1 表示发送找回密码邮件
     email_record = EmailVerifyRecord()
     code = generate_random_str(16)
     email_record.code = code
@@ -42,10 +42,15 @@ def send_register_email(email, send_type="register"):     # 0 表示发送注册
 
     if send_type == "register":
         email_title = u"萌学在线网注册激活链接"
-        email_body = u"复制并通过浏览器打开以下链接，即可激活您的邮箱: http://127.0.0.1:8000/activate/{0}".format(code)
+        email_body = u"复制以下链接并通过浏览器打开，即可激活您的邮箱: http://127.0.0.1:8000/activate/{0}".format(code)
         send_status = send_mail(email_title, email_body, EMAIL_FROM, [email])
         if send_status:
             pass
-
+    elif send_type == "forget":
+        email_title = u"萌学在线网密码重置链接"
+        email_body = u"复制以下链接并通过浏览器打开，即可重置您的密码: http://127.0.0.1:8000/showpwdreset/{0}".format(code)
+        send_status = send_mail(email_title, email_body, EMAIL_FROM, [email])
+        if send_status:
+            pass
 
 

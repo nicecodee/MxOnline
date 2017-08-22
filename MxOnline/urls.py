@@ -28,7 +28,8 @@ import xadmin
 
 
 '''自定义模块'''
-from users.views import LoginView, RegisterView, ActivateUserView
+from users.views import LoginView, RegisterView, ActivateUserView, ForgetPwdView, \
+    ShowPwdResetView, PwdResetView
 
 
 urlpatterns = [
@@ -41,5 +42,8 @@ urlpatterns = [
     url(r'^login/$', LoginView.as_view(), name="login"),
     url(r'^register/$', RegisterView.as_view(), name="register"),
     url(r'^activate/(?P<activate_code>.*)/$', ActivateUserView.as_view(), name="user_activate"),
+    url(r'^forgetpwd/$', ForgetPwdView.as_view(), name="forget_pwd"),
+    url(r'^showpwdreset/(?P<reset_code>.*)/$', ShowPwdResetView.as_view(), name="show_pwd_reset"),
+    url(r'^pwdreset/$', PwdResetView.as_view(), name="pwd_reset"),
 
 ]
