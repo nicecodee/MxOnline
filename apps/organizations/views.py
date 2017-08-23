@@ -66,7 +66,7 @@ class OrgListView(View):
         })
 
 
-# 用户添加咨询（提交"我要学习" 表单），该功能采用异步方式，前端用ajax实现
+# 用户添加咨询（提交"我要学习" 表单），采用异步方式，前端用ajax实现
 class AddUserAskView(View):
    def post(self, request):
        userask_form = UserAskForm(request.POST)

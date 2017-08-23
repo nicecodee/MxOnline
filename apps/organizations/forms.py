@@ -28,7 +28,7 @@ class UserAskForm(forms.ModelForm):
     # 自定义表单验证（注：这类验证都是以 clean_ 开头）
     def clean_mobile(self):
         mobile = self.cleaned_data.get("mobile")
-        REGEX_MOBILE = "^1[358]\d{9}$|^147\d{8}$|^176\d{8}$"   #通过正则表达式，验证手机号
+        REGEX_MOBILE = "^1[358]\d{9}$|^147\d{8}$|^176\d{8}$"    #通过正则表达式，验证手机号
         p = re.compile(REGEX_MOBILE)
         if p.match(mobile):
             return mobile
