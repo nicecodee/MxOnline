@@ -17,9 +17,9 @@ xadmin.site.register(CityDict, CityDictAdmin)
 
 # 注册教学机构
 class CourseOrgAdmin(object):   # 注意这里不能继承admin.ModelAdmin
-    list_display = ('name', 'desc', 'click_num', 'fav_num', 'image', 'address', 'city', 'add_time')
-    search_fields = ('name', 'desc', 'click_num', 'fav_num', 'image', 'address', 'city__name')
-    list_filter = ('name', 'desc', 'click_num', 'fav_num', 'image', 'address', 'city__name', 'add_time')
+    list_display = ('name', 'desc', 'category', 'click_num', 'fav_num', 'image', 'address', 'city', 'add_time')
+    search_fields = ('name', 'desc', 'category', 'click_num', 'fav_num', 'image', 'address', 'city__name')
+    list_filter = ('name', 'desc', 'category', 'click_num', 'fav_num', 'image', 'address', 'city__name', 'add_time')
 
 xadmin.site.register(CourseOrg, CourseOrgAdmin)
 

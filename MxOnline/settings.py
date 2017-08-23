@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'xadmin',       #引入xadmin
     'crispy_forms',  # 引入xadmin的依赖包(注意中间要用下划线）
     'captcha',      #第三方图片验证码生成器
+    'pure_pagination',    # 添加分页模块（第三方库： django-pure-pagination）
 ]
 
 # 手动重载AUTH_USER_MODEL
@@ -88,6 +89,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.core.context_processors.media',     # 添加media的上下文处理器，用于把MEDIA_URL注册至html中
             ],
         },
     },
@@ -169,6 +171,18 @@ EMAIL_FROM = 'nicekidee@sina.com'
 EMAIL_HOST_PASSWORD = 'Banana@001'
 EMAIL_USE_TLS = False
 
+
+# 设置文件上传的路径
+MEDIA_URL = '/uploads/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
+
+# 设置分页（利用第三方库： django-pure-pagination）
+PAGINATION_SETTINGS = {
+    'PAGE_RANGE_DISPLAYED': 10,
+    'MARGIN_PAGES_DISPLAYED': 2,
+
+    'SHOW_FIRST_PAGE_WHEN_INVALID': True,
+}
 
 
 '''

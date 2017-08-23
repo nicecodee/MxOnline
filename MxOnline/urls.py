@@ -20,16 +20,20 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from django.views.generic import TemplateView   #引入django自带的TemplateView,用于直接处理静态文件
+from django.views.static import serve       # 用于处理静态文件
+
 
 
 '''第三方模块'''
 # 引入xadmin
 import xadmin
+from MxOnline.settings import MEDIA_ROOT
 
 
 '''自定义模块'''
 from users.views import LoginView, RegisterView, ActivateUserView, ForgetPwdView, \
     ShowPwdResetView, PwdResetView
+from organizations.views import OrgListView
 
 
 urlpatterns = [
@@ -45,5 +49,6 @@ urlpatterns = [
     url(r'^forgetpwd/$', ForgetPwdView.as_view(), name="forget_pwd"),
     url(r'^showpwdreset/(?P<reset_code>.*)/$', ShowPwdResetView.as_view(), name="show_pwd_reset"),
     url(r'^pwdreset/$', PwdResetView.as_view(), name="pwd_reset"),
-
+    url(r'^orglist/$', OrgListView.as_view(), name="org_list"),    #课程机构列表
+    url(r'^media/(?P<path>.*)$', serve, {"document_root":MEDIA_ROOT}),      # 设置上传文件的访问处理
 ]
