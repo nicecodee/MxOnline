@@ -33,8 +33,6 @@ from MxOnline.settings import MEDIA_ROOT
 '''自定义模块'''
 from users.views import LoginView, RegisterView, ActivateUserView, ForgetPwdView, \
     ShowPwdResetView, PwdResetView
-from organizations.views import OrgListView
-
 
 urlpatterns = [
     # url(r'^admin/', admin.site.urls),
@@ -49,6 +47,6 @@ urlpatterns = [
     url(r'^forgetpwd/$', ForgetPwdView.as_view(), name="forget_pwd"),
     url(r'^showpwdreset/(?P<reset_code>.*)/$', ShowPwdResetView.as_view(), name="show_pwd_reset"),
     url(r'^pwdreset/$', PwdResetView.as_view(), name="pwd_reset"),
-    url(r'^orglist/$', OrgListView.as_view(), name="org_list"),    #课程机构列表
-    url(r'^media/(?P<path>.*)$', serve, {"document_root":MEDIA_ROOT}),      # 设置上传文件的访问处理
+    url(r'^media/(?P<path>.*)$', serve, {"document_root":MEDIA_ROOT}),      # 设置上传文件的访问处理函数
+    url(r'^org/', include('organizations.urls', namespace='org')),    # 课程机构URL配置
 ]

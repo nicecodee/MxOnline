@@ -1,12 +1,12 @@
 # encoding: utf8
 
 '''/////////'''
-'''导入django自带模块'''
+'''导入python/django自带模块'''
 from django.shortcuts import render
 from django.views.generic.base import View
 from django.shortcuts import render_to_response         # 分页
-
-
+from django.http import HttpResponse
+import json
 
 '''导入第三方模块'''
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger  # 分页
@@ -15,7 +15,7 @@ from pure_pagination import Paginator, EmptyPage, PageNotAnInteger  # 分页
 
 '''导入自定义模块'''
 from models import CourseOrg, CityDict
-
+from forms import UserAskForm
 
 
 '''自定义类'''
@@ -65,3 +65,15 @@ class OrgListView(View):
             'sort_by':sort_by,
         })
 
+
+# 用户添加咨询（提交"我要学习" 表单），该功能采用异步方式，前端用ajax实现
+class AddUserAskView(View):
+   def post(self, request):
+       userask_form = UserAskForm(request.POST)
+       if userask_form.is_valid():
+           userask_form.save(commit=True)    # 不需要取出表单数据，直接存入数据库(这就是Model转换成的form的优点)
+           suc_dict = {'status':'success'}
+           return  HttpResponse(json.dumps(suc_dict), content_type="application/json")
+       else:
+           fail_dict = {'status':'fail', 'msg':u'填写错误'}
+           return HttpResponse(json.dumps(fail_dict), content_type="application/json")
