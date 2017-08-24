@@ -17,6 +17,7 @@ from pure_pagination import Paginator, EmptyPage, PageNotAnInteger  # 分页
 from models import CourseOrg, CityDict
 from forms import UserAskForm
 from courses.models import Course
+from operations.models import UserFavorite
 
 
 
@@ -86,20 +87,115 @@ class AddUserAskView(View):
 # 机构详情首页
 class OrgHomeView(View):
     def get(self, request, org_id):
+        current_page = "home"
         course_org = CourseOrg.objects.get(id=int(org_id))  # 根据org_id查询对应的机构
+
+        # 判断用户是否已收藏机构
+        has_fav = False # 默认用户未收藏机构
+        if request.user.is_authenticated():
+            if UserFavorite.objects.filter(user=request.user, fav_id=course_org.id, fav_type=2):
+                has_fav = True
+
         all_courses = course_org.course_set.all()[:3]   # 获取该机构的前3个课程
         all_teachers = course_org.teacher_set.all()[:1]     # 获取该机构的第1个教师
         return render(request, 'org-detail-homepage.html', {
             'all_courses':all_courses,
             'all_teachers':all_teachers,
             'course_org':course_org,
+            'current_page':current_page,
+            'has_fav':has_fav,
+        })
+
+
+# 机构课程列表
+class OrgCourseView(View):
+    def get(self, request, org_id):
+        current_page = "course"
+        course_org = CourseOrg.objects.get(id=int(org_id))  # 根据org_id查询对应的机构
+
+        # 判断用户是否已收藏机构
+        has_fav = False # 默认用户未收藏机构
+        if request.user.is_authenticated():
+            if UserFavorite.objects.filter(user=request.user, fav_id=course_org.id, fav_type=2):
+                has_fav = True
+
+        all_courses = course_org.course_set.all()   # 获取该机构的课程
+        return render(request, 'org-detail-course.html', {
+            'all_courses':all_courses,
+            'course_org':course_org,
+            'current_page': current_page,
+            'has_fav': has_fav,
         })
 
 
 
+# 机构介绍
+class OrgDescView(View):
+    def get(self, request, org_id):
+        current_page = "desc"
+        course_org = CourseOrg.objects.get(id=int(org_id))  # 根据org_id查询对应的机构
+
+        # 判断用户是否已收藏机构
+        has_fav = False # 默认用户未收藏机构
+        if request.user.is_authenticated():
+            if UserFavorite.objects.filter(user=request.user, fav_id=course_org.id, fav_type=2):
+                has_fav = True
+
+        return render(request, 'org-detail-desc.html', {
+            'course_org':course_org,
+            'current_page': current_page,
+            'has_fav': has_fav,
+        })
 
 
+# 机构讲师
+class OrgTeacherView(View):
+    def get(self, request, org_id):
+        current_page = "course"
+        course_org = CourseOrg.objects.get(id=int(org_id))  # 根据org_id查询对应的机构
 
+        # 判断用户是否已收藏机构
+        has_fav = False # 默认用户未收藏机构
+        if request.user.is_authenticated():
+            if UserFavorite.objects.filter(user=request.user, fav_id=course_org.id, fav_type=2):
+                has_fav = True
+
+        all_teachers = course_org.teacher_set.all()   # 获取该机构的讲师
+        return render(request, 'org-detail-teachers.html', {
+            'all_teachers':all_teachers,
+            'course_org':course_org,
+            'current_page': current_page,
+            'has_fav': has_fav,
+        })
+
+
+# 机构收藏与取消
+class AddFavView(View):
+    def post(self, request):
+        fav_id = request.POST.get("fav_id", 0)  #默认值为0而不是空字符串，是为了避免filter查询时空字符串抛出异常
+        fav_type = request.POST.get("fav_type", 0)
+
+        if not request.user.is_authenticated():     # 验证用户是否登录
+            fail_dict = {'status': 'fail', 'msg': u'用户未登录'}
+            return HttpResponse(json.dumps(fail_dict), content_type="application/json")
+
+        exist_records = UserFavorite.objects.filter(user=request.user, fav_id=int(fav_id), fav_type=int(fav_type))
+        if exist_records:   #如果已经存在记录，说明用户要取消收藏
+            exist_records.delete()
+            suc_dict = {'status': 'success', 'msg': u'收藏'}
+            return HttpResponse(json.dumps(suc_dict), content_type="application/json")
+        else:
+            user_fav = UserFavorite()
+            if int(fav_id) > 0 and int(fav_type) > 0:
+                user_fav.user = request.user
+                user_fav.fav_id = int(fav_id)
+                user_fav.fav_type = fav_type
+                user_fav.save()
+                suc_dict = {'status': 'success', 'msg': u'取消收藏'}
+                return HttpResponse(json.dumps(suc_dict), content_type="application/json")
+            else:
+                fail_dict = {'status': 'fail', 'msg': u'收藏出错'}
+                return HttpResponse(json.dumps(fail_dict), content_type="application/json")
 
 
 

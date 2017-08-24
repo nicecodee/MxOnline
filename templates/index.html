@@ -85,7 +85,7 @@
 						<ul>
 							<li class="active" ><a href="{% url 'index' %}">首页</a></li>
 							<li >
-								<a href="course-list.html">
+								<a href="{% url 'course:course_list' %}">
 									公开课<img class="hot" src="{% static 'images/nav_hot.png' %}">
 								</a>
 							</li>
@@ -258,57 +258,6 @@
                                 </div>
                                 <div class="bottom">
                                     <span class="fl" title="南京大学">南京大学</span>
-                                    <span class="star fr">0</span>
-                                </div>
-                            </div>
-
-                            <div class="module1_6 box">
-                                <a href="course-detail.html">
-                                    <img width="233" height="190" src="{% static 'media/courses/2016/11/57035ff200014b8a06000338-240-135_dHfj8Nq.jpg' %}"/>
-                                </a>
-                                <div class="des">
-                                    <a href="course-detail.html">
-                                        <h2 title="java入门2">java入门2</h2>
-                                    </a>
-                                    <span class="fl">难度：<i class="key">高级</i></span>
-                                    <span class="fr">学习人数：0</span>
-                                </div>
-                                <div class="bottom">
-                                    <span class="fl" title="慕课网2">慕课网2</span>
-                                    <span class="star fr">0</span>
-                                </div>
-                            </div>
-
-                            <div class="module1_7 box">
-                                <a href="course-detail.html">
-                                    <img width="233" height="190" src="{% static 'media/courses/2016/11/57035ff200014b8a06000338-240-135_0nFiBSI.jpg' %}"/>
-                                </a>
-                                <div class="des">
-                                    <a href="course-detail.html">
-                                        <h2 title="java入门3">java入门3</h2>
-                                    </a>
-                                    <span class="fl">难度：<i class="key">初级</i></span>
-                                    <span class="fr">学习人数：1</span>
-                                </div>
-                                <div class="bottom">
-                                    <span class="fl" title="慕课网3">慕课网3</span>
-                                    <span class="star fr">0</span>
-                                </div>
-                            </div>
-
-                            <div class="module1_8 box">
-                                <a href="course-detail.html">
-                                    <img width="233" height="190" src="{% static 'media/courses/2016/11/540e57300001d6d906000338-240-135_MSIqfvw.jpg' %}"/>
-                                </a>
-                                <div class="des">
-                                    <a href="course-detail.html">
-                                        <h2 title="python入门2">python入门2</h2>
-                                    </a>
-                                    <span class="fl">难度：<i class="key">中级</i></span>
-                                    <span class="fr">学习人数：0</span>
-                                </div>
-                                <div class="bottom">
-                                    <span class="fl" title="慕课网666">慕课网666</span>
                                     <span class="star fr">0</span>
                                 </div>
                             </div>
@@ -582,8 +531,7 @@
 <script src="{% static 'js/unslider.js' %}" type="text/javascript"></script>
 <script src="{% static 'js/plugins/jquery.scrollLoading.js' %}"  type="text/javascript"></script>
 <script src="{% static 'js/deco-common.js' %}"  type="text/javascript"></script>
-
-    <script type="text/javascript" src="{% static 'js/index.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/index.js' %}"></script>
 
 </body>
 </html>

@@ -49,4 +49,5 @@ urlpatterns = [
     url(r'^pwdreset/$', PwdResetView.as_view(), name="pwd_reset"),
     # url(r'^media/(?P<path>.*)$', serve, {"document_root":MEDIA_ROOT}),    # 设置上传文件的访问处理函数(由于不起作用，我已弃用)
     url(r'^org/', include('organizations.urls', namespace='org')),    # 课程机构URL配置
+    url(r'^course/', include('courses.urls', namespace='course')),    # 课程相关URL配置
 ] + static(MEDIA_URL, document_root=MEDIA_ROOT)     # 设置上传文件的访问处理函数
