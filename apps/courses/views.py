@@ -50,3 +50,20 @@ class CourseListView(View):
             'courses': courses,
             'sort_by': sort_by,
         })
+
+
+# 课程详情
+class CourseDetailView(View):
+    def get(self, request, course_id):
+        course = Course.objects.get(id = int(course_id))
+        # 用户进入本页面，则课程的点击数加1
+        course.click_num += 1
+        course.save()
+
+        return render(request, 'course-detail.html', {
+            'course':course,
+        })
+
+
+
+
