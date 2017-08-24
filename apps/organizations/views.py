@@ -16,6 +16,8 @@ from pure_pagination import Paginator, EmptyPage, PageNotAnInteger  # 分页
 '''导入自定义模块'''
 from models import CourseOrg, CityDict
 from forms import UserAskForm
+from courses.models import Course
+
 
 
 '''自定义类'''
@@ -72,8 +74,34 @@ class AddUserAskView(View):
        userask_form = UserAskForm(request.POST)
        if userask_form.is_valid():
            userask_form.save(commit=True)    # 不需要取出表单数据，直接存入数据库(这就是Model转换成的form的优点)
+           # return HttpResponse('{"status:"success"}', content_type='application/json')
            suc_dict = {'status':'success'}
            return  HttpResponse(json.dumps(suc_dict), content_type="application/json")
        else:
+           # return HttpResponse('{"status:"fail","msg":u"添加出错"}', content_type='application/json')
            fail_dict = {'status':'fail', 'msg':u'填写错误'}
            return HttpResponse(json.dumps(fail_dict), content_type="application/json")
+
+
+# 机构详情首页
+class OrgHomeView(View):
+    def get(self, request, org_id):
+        course_org = CourseOrg.objects.get(id=int(org_id))  # 根据org_id查询对应的机构
+        all_courses = course_org.course_set.all()[:3]   # 获取该机构的前3个课程
+        all_teachers = course_org.teacher_set.all()[:1]     # 获取该机构的第1个教师
+        return render(request, 'org-detail-homepage.html', {
+            'all_courses':all_courses,
+            'all_teachers':all_teachers,
+            'course_org':course_org,
+        })
+
+
+
+
+
+
+
+
+
+
+

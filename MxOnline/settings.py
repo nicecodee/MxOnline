@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',      # django自带的session机制
     'django.contrib.messages',
-    'django.contrib.staticfiles',
+    'django.contrib.staticfiles',    # django自带的静态文件处理模块
     'users',
     'courses',
     'organizations',
@@ -134,17 +134,11 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
-# LANGUAGE_CODE = 'en-us'
+
 LANGUAGE_CODE = 'zh_hans'   #后台改为中文显示
-
-# TIME_ZONE = 'UTC'
 TIME_ZONE = 'Asia/Shanghai'       #时区改为上海
-
 USE_I18N = True
-
 USE_L10N = True
-
-# USE_TZ = True
 USE_TZ = False  #修改为False（本地时间），否则django在数据库存储过程中会使用国际时间
 
 # Static files (CSS, JavaScript, Images)
@@ -156,14 +150,15 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
 '''
-以下设置是为了避免以下报错：Error fetching command 'collectstatic' ...
+以下设置是为了避免出现报错（可能是django 1.9.x 版本的bug）：Error fetching command 'collectstatic' ...
 '''
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 
 
-# 设置邮箱的发送方
+# 设置邮箱发送服务
 EMAIL_HOST = 'smtp.sina.com'
 EMAIL_PORT = 25
 EMAIL_HOST_USER = 'nicekidee@sina.com'
@@ -186,14 +181,7 @@ PAGINATION_SETTINGS = {
 
 
 '''
-# django1.8以后，TEMPLATE_DIRS 就不被官方推荐使用了，而是写进TEMPLATES列表，即：
-
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates'),],
-        ...
-
+# django1.8以后，以下 TEMPLATE_DIRS 的写法就不被官方推荐使用了，而是写进上面的TEMPLATES列表
 '''
 # TEMPLATE_DIRS = (os.path.join(BASE_DIR,  'templates'),)
 
