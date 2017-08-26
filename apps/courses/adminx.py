@@ -8,9 +8,9 @@ from models import Course, Lesson, Video, CourseResource
 
 # 注册课程
 class CourseAdmin(object):   # 注意这里不能继承admin.ModelAdmin
-    list_display = ('name', 'desc', 'course_org', 'degree', 'learn_times', 'students', 'fav_num', 'click_num', 'add_time')  # 自定义后台显示的列
-    search_fields = ('name', 'desc', 'course_org', 'degree', 'learn_times', 'students', 'fav_num', 'click_num')   # 自定义后台搜索字段(不要把Datetime属性的add_time字段放在这里，否则搜索中文时会报错）
-    list_filter = ('name', 'desc', 'course_org', 'degree', 'learn_times', 'students', 'fav_num', 'click_num', 'add_time')    # 自定义后台过滤字段
+    list_display = ('name', 'desc', 'course_org', 'teacher', 'degree', 'learn_times', 'students', 'fav_num', 'click_num', 'add_time')  # 自定义后台显示的列
+    search_fields = ('name', 'desc', 'course_org', 'teacher', 'degree', 'learn_times', 'students', 'fav_num', 'click_num')   # 自定义后台搜索字段(不要把Datetime属性的add_time字段放在这里，否则搜索中文时会报错）
+    list_filter = ('name', 'desc', 'course_org', 'teacher', 'degree', 'learn_times', 'students', 'fav_num', 'click_num', 'add_time')    # 自定义后台过滤字段
 
 
 xadmin.site.register(Course, CourseAdmin)
@@ -38,9 +38,9 @@ xadmin.site.register(Video, VideoAdmin)
 
 # 注册课程资源
 class CourseResourceAdmin(object):   # 注意这里不能继承admin.ModelAdmin
-    list_display = ('course', 'name', 'download', 'add_time')
-    search_fields = ('course__name', 'name', 'download')  # 不要把Datetime属性的add_time字段放在这里，否则搜索中文时会报错
-    list_filter =  ('course__name', 'name', 'download', 'add_time')
+    list_display = ('name', 'course', 'download', 'add_time')
+    search_fields = ('name', 'course__name', 'download')  # 不要把Datetime属性的add_time字段放在这里，否则搜索中文时会报错
+    list_filter =  ('name', 'course__name', 'download', 'add_time')
 
 
 xadmin.site.register(CourseResource, CourseResourceAdmin)

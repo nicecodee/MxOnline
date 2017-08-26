@@ -36,6 +36,9 @@ class CourseComments(models.Model):
         verbose_name = u"课程评论"
         verbose_name_plural = verbose_name
 
+    def __unicode__(self):
+        return self.comments
+
 
 class UserFavorite(models.Model):
     fav_id = models.IntegerField(default=0 ,verbose_name=u"数据id")

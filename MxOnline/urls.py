@@ -20,8 +20,7 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from django.views.generic import TemplateView   #引入django自带的TemplateView,用于直接处理静态文件
-# from django.views.static import serve        # 用于处理静态文件(由于该模块不起作用，我已弃用)
-from django.conf.urls.static import static      # 用于处理静态文件
+from django.views.static import serve        # 用于处理静态文件
 
 
 '''第三方模块'''
@@ -41,13 +40,19 @@ urlpatterns = [
 
     # 使用TemplateView， 不用写view函数，直接处理 xx.html 等网页文件
     url(r'^$', TemplateView.as_view(template_name="index.html"), name="index"),
+
     url(r'^login/$', LoginView.as_view(), name="login"),
     url(r'^register/$', RegisterView.as_view(), name="register"),
     url(r'^activate/(?P<activate_code>.*)/$', ActivateUserView.as_view(), name="user_activate"),
     url(r'^forgetpwd/$', ForgetPwdView.as_view(), name="forget_pwd"),
     url(r'^showpwdreset/(?P<reset_code>.*)/$', ShowPwdResetView.as_view(), name="show_pwd_reset"),
     url(r'^pwdreset/$', PwdResetView.as_view(), name="pwd_reset"),
-    # url(r'^media/(?P<path>.*)$', serve, {"document_root":MEDIA_ROOT}),    # 设置上传文件的访问处理函数(由于不起作用，我已弃用)
+
+    # 设置上传文件的访问处理(注意路径 ^uploads 要和settings.py 里的 MEDIA_URL 对应)
+    url(r'^uploads/(?P<path>.*)$', serve, {"document_root":MEDIA_ROOT}),
+
+    # 导入各个app的urls.py
     url(r'^org/', include('organizations.urls', namespace='org')),    # 课程机构URL配置
     url(r'^course/', include('courses.urls', namespace='course')),    # 课程相关URL配置
-] + static(MEDIA_URL, document_root=MEDIA_ROOT)     # 设置上传文件的访问处理函数
+]
+

@@ -26,6 +26,7 @@ from operations.models import UserFavorite
 # 课程机构列表
 class OrgListView(View):
     def get(self, request):
+        current_page = "org"  # 用于高亮首页的“授课机构”标签
         all_orgs = CourseOrg.objects.all()
         all_citys = CityDict.objects.all()
         hot_orgs = all_orgs.order_by("-click_num")[:3]  #按照点击量，获取排名前3的机构
@@ -66,6 +67,7 @@ class OrgListView(View):
             'category':category,
             'hot_orgs':hot_orgs,
             'sort_by':sort_by,
+            'current_page':current_page,
         })
 
 
@@ -87,7 +89,7 @@ class AddUserAskView(View):
 # 机构详情首页
 class OrgHomeView(View):
     def get(self, request, org_id):
-        current_page = "home"
+        current_org_page = "org_home"   # 用于高亮“授课机构”内的“机构首页”标签
         course_org = CourseOrg.objects.get(id=int(org_id))  # 根据org_id查询对应的机构
 
         # 判断用户是否已收藏机构
@@ -102,7 +104,7 @@ class OrgHomeView(View):
             'all_courses':all_courses,
             'all_teachers':all_teachers,
             'course_org':course_org,
-            'current_page':current_page,
+            'current_org_page':current_org_page,
             'has_fav':has_fav,
         })
 
@@ -110,7 +112,7 @@ class OrgHomeView(View):
 # 机构课程列表
 class OrgCourseView(View):
     def get(self, request, org_id):
-        current_page = "course"
+        current_org_page = "org_course"       # 用于高亮“授课机构”内的“机构课程”标签
         course_org = CourseOrg.objects.get(id=int(org_id))  # 根据org_id查询对应的机构
 
         # 判断用户是否已收藏机构
@@ -123,7 +125,7 @@ class OrgCourseView(View):
         return render(request, 'org-detail-course.html', {
             'all_courses':all_courses,
             'course_org':course_org,
-            'current_page': current_page,
+            'current_org_page': current_org_page,
             'has_fav': has_fav,
         })
 
@@ -132,7 +134,7 @@ class OrgCourseView(View):
 # 机构介绍
 class OrgDescView(View):
     def get(self, request, org_id):
-        current_page = "desc"
+        current_org_page = "org_desc"        # 用于高亮“授课机构”内的“机构介绍”标签
         course_org = CourseOrg.objects.get(id=int(org_id))  # 根据org_id查询对应的机构
 
         # 判断用户是否已收藏机构
@@ -143,7 +145,7 @@ class OrgDescView(View):
 
         return render(request, 'org-detail-desc.html', {
             'course_org':course_org,
-            'current_page': current_page,
+            'current_org_page': current_org_page,
             'has_fav': has_fav,
         })
 
@@ -151,7 +153,7 @@ class OrgDescView(View):
 # 机构讲师
 class OrgTeacherView(View):
     def get(self, request, org_id):
-        current_page = "course"
+        current_org_page = "org_teacher"       # 用于高亮“授课机构”内的“机构讲师”标签
         course_org = CourseOrg.objects.get(id=int(org_id))  # 根据org_id查询对应的机构
 
         # 判断用户是否已收藏机构
@@ -164,12 +166,12 @@ class OrgTeacherView(View):
         return render(request, 'org-detail-teachers.html', {
             'all_teachers':all_teachers,
             'course_org':course_org,
-            'current_page': current_page,
+            'current_org_page': current_org_page,
             'has_fav': has_fav,
         })
 
 
-# 机构收藏与取消
+# 机构或课程的收藏与取消
 class AddFavView(View):
     def post(self, request):
         fav_id = request.POST.get("fav_id", 0)  #默认值为0而不是空字符串，是为了避免filter查询时空字符串抛出异常

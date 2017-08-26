@@ -45,6 +45,9 @@ class CourseOrg(models.Model):
         verbose_name = u"课程机构"
         verbose_name_plural = verbose_name
 
+    def get_teacher_num(self):      # 反向获取机构的讲师数量
+        return self.teacher_set.all().count()
+
 
 class Teacher(models.Model):
     name = models.CharField(max_length=50, verbose_name=u"教师名称")
