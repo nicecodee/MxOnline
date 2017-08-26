@@ -12,7 +12,7 @@ import json
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger  # 分页
 
 '''导入自定义模块'''
-from models import Course, CourseResource
+from models import Course, CourseResource, Video
 from operations.models import UserFavorite, CourseComments, UserCourse
 
 # 导入自定义的登录验证类（Mixin在django中一般用于表示一个基础的view，当然也可以随意命令）
@@ -176,3 +176,40 @@ class CourseAddCommentsView(View):
         else:
             fail_dict = {'status': 'fail', 'msg': u'添加失败'}
             return HttpResponse(json.dumps(fail_dict), content_type="application/json")
+
+
+# 课程视频播放页面
+class CourseVideoPlayView(View):
+    def get(self, request, video_id):
+        current_page = "course"  # 用于高亮首页的“公开课”标签
+
+        '''获取课程资源'''
+        video = Video.objects.get(id=int(video_id))  # 找出对应的课程视频
+        course = video.lesson.course    # 用上述找到的视频，根据其外键找出对应的课程
+        course_resources = CourseResource.objects.filter(course=course)  # 找出该课程所有的资源
+
+        '''查询用户是否已关联(开始学习)该课程, 如果未关联，则为用户关联该课程'''
+        is_learning = UserCourse.objects.filter(user=request.user, course=course)
+        if not is_learning:
+            new_user_course = UserCourse(user=request.user, course=course)
+            new_user_course.save()
+
+        '''获取相关课程'''
+        # 获取学过当前课程的所有用户的UserCourse记录
+        user_courses = UserCourse.objects.filter(course=course)
+        # 从上述记录中，获取所有用户的id(一个列表）
+        user_ids = [user_course.user.id for user_course in user_courses]
+        # 获取上述所有用户学过的所有课程的记录（注意这里是记录的集合，即对象的集合）,同时排除当前课程的记录
+        all_user_courses = UserCourse.objects.filter(user_id__in=user_ids).exclude(course=course) # user_id__in 是django ORM的用法，表示一个列表
+        # 从上述记录中，获取所有课程的id
+        course_ids = [user_course.course.id for user_course in all_user_courses]
+        # 根据上述id，获取所有课程，并按点击量排序后取前3名
+        related_courses = Course.objects.filter(id__in=course_ids).order_by("-click_num")[:3]
+
+        return render(request, 'course-play.html', {
+            'current_page': current_page,
+            'course': course,
+            'course_resources': course_resources,
+            'related_courses':related_courses,
+            'video':video,
+        })
