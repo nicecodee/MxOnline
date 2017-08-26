@@ -11,7 +11,7 @@ from django.conf.urls import url, include
 
 '''导入自定义模块'''
 from views import OrgListView, AddUserAskView, OrgHomeView, OrgCourseView, OrgDescView, \
-    OrgTeacherView, AddFavView
+    OrgTeacherView, AddFavView, TeacherListView, TeacherDetailView
 
 
 
@@ -24,6 +24,10 @@ urlpatterns = [
     url(r'^desc/(?P<org_id>\d+)/$', OrgDescView.as_view(), name="org_desc"),  # 机构介绍
     url(r'^teacher/(?P<org_id>\d+)/$', OrgTeacherView.as_view(), name="org_teacher"),  # 机构讲师
     url(r'^add_fav/$', AddFavView.as_view(), name="add_fav"),  # 机构或课程的收藏与取消
+
+    # 讲师相关URL
+    url(r'^teacher/list/$', TeacherListView.as_view(), name="teacher_list"),  # 讲师列表页
+    url(r'^teacher/detail/(?P<teacher_id>\d+)/$', TeacherDetailView.as_view(), name="teacher_detail"),  # 讲师详情页
 ]
 
 

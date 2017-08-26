@@ -29,7 +29,7 @@ class CourseOrg(models.Model):
                                 choices=(("org", "培训机构"), ("school", "高校"), ("personal", "个人")))
     click_num = models.IntegerField(default=0, verbose_name=u"点击数")
     fav_num = models.IntegerField(default=0, verbose_name=u"收藏数")
-    stu_num = models.IntegerField(default=0, verbose_name=u"学习人数")
+    students = models.IntegerField(default=0, verbose_name=u"学习人数")
     course_num = models.IntegerField(default=0, verbose_name=u"课程数")
     image = models.ImageField(upload_to="org/%Y/%m", verbose_name=u"logo", max_length=100)
     address = models.CharField(max_length=150, verbose_name=u"机构地址")
@@ -51,6 +51,7 @@ class CourseOrg(models.Model):
 
 class Teacher(models.Model):
     name = models.CharField(max_length=50, verbose_name=u"教师名称")
+    age = models.IntegerField(default=18, verbose_name=u"年龄")
     work_years =  models.IntegerField(default=0, verbose_name=u"工作年限")
     work_company = models.CharField(max_length=50, verbose_name=u"就职公司")
     work_position = models.CharField(max_length=50, verbose_name=u"公司职位")
@@ -69,3 +70,7 @@ class Teacher(models.Model):
     class Meta:
         verbose_name = u"教师"
         verbose_name_plural = verbose_name
+
+    # 反向获取讲师的课程数
+    def get_teacher_courses_num(self):
+        return self.course_set.all().count()

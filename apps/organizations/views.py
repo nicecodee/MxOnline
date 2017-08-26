@@ -12,9 +12,8 @@ import json
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger  # 分页
 
 
-
 '''导入自定义模块'''
-from models import CourseOrg, CityDict
+from models import CourseOrg, CityDict, Teacher
 from forms import UserAskForm
 from courses.models import Course
 from operations.models import UserFavorite
@@ -27,6 +26,7 @@ from operations.models import UserFavorite
 class OrgListView(View):
     def get(self, request):
         current_page = "org"  # 用于高亮首页的“授课机构”标签
+
         all_orgs = CourseOrg.objects.all()
         all_citys = CityDict.objects.all()
         hot_orgs = all_orgs.order_by("-click_num")[:3]  #按照点击量，获取排名前3的机构
@@ -43,7 +43,7 @@ class OrgListView(View):
         sort_by = request.GET.get('sort', "")
         # 按学习人数排序
         if sort_by == "students":
-            all_orgs = all_orgs.order_by("-stu_num")
+            all_orgs = all_orgs.order_by("-students")
         # 按课程数排序
         if sort_by == "courses":
             all_orgs = all_orgs.order_by("-course_num")
@@ -99,7 +99,7 @@ class OrgHomeView(View):
                 has_fav = True
 
         all_courses = course_org.course_set.all()[:3]   # 获取该机构的前3个课程
-        all_teachers = course_org.teacher_set.all()[:1]     # 获取该机构的第1个教师
+        all_teachers = course_org.teacher_set.all()[:3]     # 获取该机构的前3个教师
         return render(request, 'org-detail-homepage.html', {
             'all_courses':all_courses,
             'all_teachers':all_teachers,
@@ -199,6 +199,71 @@ class AddFavView(View):
                 fail_dict = {'status': 'fail', 'msg': u'收藏出错'}
                 return HttpResponse(json.dumps(fail_dict), content_type="application/json")
 
+
+# 讲师列表页
+class TeacherListView(View):
+    def get(self, request):
+        current_page = "teacher"  # 用于高亮首页的“授课讲师”标签
+
+        all_teachers = Teacher.objects.all()    # 获取所有讲师
+        sorted_teachers = all_teachers.order_by("-click_num")[:5]  # 按照点击量，获取排名前5的讲师
+
+        sort_by = request.GET.get('sort', "")
+        # 按点击数排序
+        if sort_by == "click_num":
+            all_teachers = all_teachers.order_by("-click_num")
+
+        teacher_num = all_teachers.count()  # 获取讲师数量
+
+        # 对讲师列表进行分页
+        try:
+            page = request.GET.get('page', 1)
+        except PageNotAnInteger:
+            page = 1
+        p = Paginator(all_teachers, 3, request=request)
+        teachers = p.page(page)
+
+        return render(request, 'teachers-list.html', {
+            'teachers': teachers,
+            'teacher_num': teacher_num,
+            'sorted_teachers': sorted_teachers,
+            'sort_by': sort_by,
+            'current_page': current_page,
+        })
+
+
+# 讲师详情页
+class TeacherDetailView(View):
+    def get(self, request, teacher_id):
+        current_page = "teacher"  # 用于高亮首页的“授课讲师”标签
+
+        # 获取所有讲师
+        all_teachers = Teacher.objects.all()
+        sorted_teachers = all_teachers.order_by("-click_num")[:5]  # 按照点击量，获取排名前5的讲师
+        # 根据teacher_id查出当前的讲师
+        teacher = Teacher.objects.get(id=int(teacher_id))
+
+        # 判断用户是否已收藏讲师或机构
+        has_fav_teacher = False  # 默认用户未收藏讲师
+        has_fav_org = False      # 默认用户未收藏机构
+        if request.user.is_authenticated():  # 判断用户是否登录
+            # 判断用户是否收藏讲师
+            if UserFavorite.objects.filter(user=request.user, fav_id=teacher.id, fav_type=3):
+                has_fav_teacher = True
+            # 判断用户是否收藏机构
+            if UserFavorite.objects.filter(user=request.user, fav_id=teacher.org.id, fav_type=2):
+                has_fav_org = True
+
+        # 获取该讲师的所有课程
+        all_courses = Course.objects.filter(teacher=teacher)
+        return render(request, 'teacher-detail.html', {
+            'all_courses':all_courses,
+            'sorted_teachers':sorted_teachers,
+            'current_page': current_page,
+            'teacher':teacher,
+            'has_fav_teacher':has_fav_teacher,
+            'has_fav_org':has_fav_org,
+        })
 
 
 

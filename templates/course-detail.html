@@ -144,7 +144,7 @@
                     {% for related_course in related_courses %}
                         <dl>
                             <dt>
-                                <a target="_blank" href="">
+                                <a target="_blank" href="{% url 'course:course_detail' related_course.id %}">
                                     <img width="240" height="220" class="scrollLoading" src="{{ MEDIA_URL }}{{ related_course.image }}"/>
                                 </a>
                             </dt>

@@ -1,9 +1,7 @@
 {% extends 'base.html' %}
-
 {% load staticfiles %}
 
 {% block title %}课程机构列表 - 萌学在线网{% endblock %}
-
 
 {% block bread %}
     <section>
@@ -85,7 +83,7 @@
                                     </div>
                                     <ul class="cont">
                                         <li class="first"><p class="pic9">课程数：<span>{{ org.course_num }}</span></p>
-                                            <p class="c7">学习人数：<span>{{ org.stu_num }}</span></p></li>
+                                            <p class="c7">学习人数：<span>{{ org.students }}</span></p></li>
                                         <li class="c8" style="padding-left:18px;">{{ org.address }}</li>
                                         <li class="pic10" style="padding-left:18px;">经典课程：
 
@@ -150,7 +148,7 @@
                     <dl class="des">
                         <dt class="num fl">{{ forloop.counter }}</dt>
                         <dd>
-                            <a href="/company/2/"><h1>{{ hot_org.name }}</h1></a>
+                            <a href="{% url 'org:org_home' hot_org.id %}"><h1>{{ hot_org.name }}</h1></a>
                             <p>{{ hot_org.address }}</p>
                         </dd>
                     </dl>
