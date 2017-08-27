@@ -7,6 +7,8 @@ from django.views.generic.base import View
 from django.shortcuts import render_to_response  # 分页
 from django.http import HttpResponse
 import json
+from django.db.models import Q  # 用于实现 “或” 逻辑运算
+
 
 '''导入第三方模块'''
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger  # 分页
@@ -25,9 +27,17 @@ from utils.mixin_utils import LoginRequiredMixin
 # 课程列表
 class CourseListView(View):
     def get(self, request):
-        current_page = "course"  # 用于高亮首页的“公开课”标签
         all_courses = Course.objects.all().order_by("-add_time")  # 默认显示的课程列表就是按添加时间（最新）排序
         hot_courses = all_courses.order_by("-click_num")[:3]  # 按照点击量，获取排名前3的课程
+
+        # 搜索课程
+        search_keywords = request.GET.get("keywords", "")
+        if search_keywords:          #__icontains 相当于sql的like语句(i表示不区分大小写)
+            all_courses = all_courses.filter(
+                Q(name__icontains=search_keywords)
+                |Q(desc__icontains=search_keywords)
+                |Q(detail__icontains=search_keywords)
+            )
 
         sort_by = request.GET.get('sort', "")
         # 按点击数排序
@@ -49,15 +59,12 @@ class CourseListView(View):
             'hot_courses': hot_courses,
             'courses': courses,
             'sort_by': sort_by,
-            'current_page': current_page,
         })
 
 
 # 课程详情
 class CourseDetailView(View):
     def get(self, request, course_id):
-        current_page = "course"  # 用于高亮首页的“公开课”标签
-
         course = Course.objects.get(id=int(course_id))
         # 用户进入本页面，则课程的点击数加1
         course.click_num += 1
@@ -85,15 +92,12 @@ class CourseDetailView(View):
             'related_courses': related_courses,
             'has_fav_course': has_fav_course,
             'has_fav_org': has_fav_org,
-            'current_page': current_page,
         })
 
 
 # 课程章节与资源信息
 class CourseInfoView(LoginRequiredMixin, View):    # 同时继承了LoginRequiredMixin，用于登录验证
     def get(self, request, course_id):
-        current_page = "course"  # 用于高亮首页的“公开课”标签
-
         '''获取课程资源'''
         course = Course.objects.get(id=int(course_id))  # 找出对应的课程
         course_resources = CourseResource.objects.filter(course=course)  # 找出该课程所有的资源
@@ -117,7 +121,6 @@ class CourseInfoView(LoginRequiredMixin, View):    # 同时继承了LoginRequire
         related_courses = Course.objects.filter(id__in=course_ids).order_by("-click_num")[:3]
 
         return render(request, 'course-video.html', {
-            'current_page': current_page,
             'course': course,
             'course_resources': course_resources,
             'related_courses':related_courses,
@@ -127,8 +130,6 @@ class CourseInfoView(LoginRequiredMixin, View):    # 同时继承了LoginRequire
 # 课程评论
 class CourseCommentsView(LoginRequiredMixin, View):   # 同时继承了LoginRequiredMixin，用于登录验证
     def get(self, request, course_id):
-        current_page = "course"  # 用于高亮首页的“公开课”标签
-
         '''获取课程评论'''
         course = Course.objects.get(id=int(course_id))  # 找出对应的课程
         course_resources = CourseResource.objects.filter(course=course)  # 找出该课程所有的资源
@@ -155,7 +156,6 @@ class CourseCommentsView(LoginRequiredMixin, View):   # 同时继承了LoginRequ
         page_comments = p.page(page)
 
         return render(request, 'course-comment.html', {
-            'current_page': current_page,
             'course': course,
             'course_resources': course_resources,
             'related_courses': related_courses,
@@ -189,8 +189,6 @@ class CourseAddCommentsView(View):
 # 课程视频播放页面
 class CourseVideoPlayView(View):
     def get(self, request, video_id):
-        current_page = "course"  # 用于高亮首页的“公开课”标签
-
         '''获取课程资源'''
         video = Video.objects.get(id=int(video_id))  # 找出对应的课程视频
         course = video.lesson.course    # 用上述找到的视频，根据其外键找出对应的课程
@@ -215,7 +213,6 @@ class CourseVideoPlayView(View):
         related_courses = Course.objects.filter(id__in=course_ids).order_by("-click_num")[:3]
 
         return render(request, 'course-play.html', {
-            'current_page': current_page,
             'course': course,
             'course_resources': course_resources,
             'related_courses':related_courses,

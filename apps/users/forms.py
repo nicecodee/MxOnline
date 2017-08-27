@@ -11,6 +11,9 @@ from django import forms
 from captcha.fields import CaptchaField
 
 
+'''导入自定义模块'''
+from models import UserProfile
+
 
 '''自定义form'''
 
@@ -38,3 +41,8 @@ class PwdResetForm(forms.Form):
     password1 = forms.CharField(required=True, min_length=6)
     password2 = forms.CharField(required=True, min_length=6)
 
+# 上传图片表单(使用ModelForm， 即通过model转换成对应的form)
+class UploadImageForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile     # 指定需要转换成form的model
+        fields = ['image', ]     # 选择指定model中特定的字段

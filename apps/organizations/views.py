@@ -5,8 +5,10 @@
 from django.shortcuts import render
 from django.views.generic.base import View
 from django.shortcuts import render_to_response         # 分页
-from django.http import HttpResponse
+from django.http import HttpResponse    # json的输入输出
 import json
+from django.db.models import Q  # 用于实现 “或” 逻辑运算
+
 
 '''导入第三方模块'''
 from pure_pagination import Paginator, EmptyPage, PageNotAnInteger  # 分页
@@ -25,11 +27,17 @@ from operations.models import UserFavorite
 # 课程机构列表
 class OrgListView(View):
     def get(self, request):
-        current_page = "org"  # 用于高亮首页的“授课机构”标签
-
         all_orgs = CourseOrg.objects.all()
         all_citys = CityDict.objects.all()
         hot_orgs = all_orgs.order_by("-click_num")[:3]  #按照点击量，获取排名前3的机构
+
+        # 搜索机构
+        search_keywords = request.GET.get("keywords", "")
+        if search_keywords:          #__icontains 相当于sql的like语句(i表示不区分大小写)
+            all_orgs = all_orgs.filter(
+                Q(name__icontains=search_keywords)
+                |Q(desc__icontains=search_keywords)
+            )
 
         # 按城市筛选
         city_id = request.GET.get('cid', "")
@@ -67,7 +75,6 @@ class OrgListView(View):
             'category':category,
             'hot_orgs':hot_orgs,
             'sort_by':sort_by,
-            'current_page':current_page,
         })
 
 
@@ -89,7 +96,6 @@ class AddUserAskView(View):
 # 机构详情首页
 class OrgHomeView(View):
     def get(self, request, org_id):
-        current_org_page = "org_home"   # 用于高亮“授课机构”内的“机构首页”标签
         course_org = CourseOrg.objects.get(id=int(org_id))  # 根据org_id查询对应的机构
 
         # 判断用户是否已收藏机构
@@ -104,7 +110,6 @@ class OrgHomeView(View):
             'all_courses':all_courses,
             'all_teachers':all_teachers,
             'course_org':course_org,
-            'current_org_page':current_org_page,
             'has_fav':has_fav,
         })
 
@@ -112,7 +117,6 @@ class OrgHomeView(View):
 # 机构课程列表
 class OrgCourseView(View):
     def get(self, request, org_id):
-        current_org_page = "org_course"       # 用于高亮“授课机构”内的“机构课程”标签
         course_org = CourseOrg.objects.get(id=int(org_id))  # 根据org_id查询对应的机构
 
         # 判断用户是否已收藏机构
@@ -125,7 +129,6 @@ class OrgCourseView(View):
         return render(request, 'org-detail-course.html', {
             'all_courses':all_courses,
             'course_org':course_org,
-            'current_org_page': current_org_page,
             'has_fav': has_fav,
         })
 
@@ -134,7 +137,6 @@ class OrgCourseView(View):
 # 机构介绍
 class OrgDescView(View):
     def get(self, request, org_id):
-        current_org_page = "org_desc"        # 用于高亮“授课机构”内的“机构介绍”标签
         course_org = CourseOrg.objects.get(id=int(org_id))  # 根据org_id查询对应的机构
 
         # 判断用户是否已收藏机构
@@ -145,7 +147,6 @@ class OrgDescView(View):
 
         return render(request, 'org-detail-desc.html', {
             'course_org':course_org,
-            'current_org_page': current_org_page,
             'has_fav': has_fav,
         })
 
@@ -153,7 +154,6 @@ class OrgDescView(View):
 # 机构讲师
 class OrgTeacherView(View):
     def get(self, request, org_id):
-        current_org_page = "org_teacher"       # 用于高亮“授课机构”内的“机构讲师”标签
         course_org = CourseOrg.objects.get(id=int(org_id))  # 根据org_id查询对应的机构
 
         # 判断用户是否已收藏机构
@@ -166,7 +166,6 @@ class OrgTeacherView(View):
         return render(request, 'org-detail-teachers.html', {
             'all_teachers':all_teachers,
             'course_org':course_org,
-            'current_org_page': current_org_page,
             'has_fav': has_fav,
         })
 
@@ -203,10 +202,19 @@ class AddFavView(View):
 # 讲师列表页
 class TeacherListView(View):
     def get(self, request):
-        current_page = "teacher"  # 用于高亮首页的“授课讲师”标签
 
         all_teachers = Teacher.objects.all()    # 获取所有讲师
         sorted_teachers = all_teachers.order_by("-click_num")[:5]  # 按照点击量，获取排名前5的讲师
+
+        # 搜索讲师
+        search_keywords = request.GET.get("keywords", "")
+        if search_keywords:          #__icontains 相当于sql的like语句(i表示不区分大小写)
+            all_teachers = all_teachers.filter(
+                Q(name__icontains=search_keywords)
+                |Q(work_company__icontains=search_keywords)
+                |Q(work_position__icontains=search_keywords)
+
+            )
 
         sort_by = request.GET.get('sort', "")
         # 按点击数排序
@@ -228,14 +236,12 @@ class TeacherListView(View):
             'teacher_num': teacher_num,
             'sorted_teachers': sorted_teachers,
             'sort_by': sort_by,
-            'current_page': current_page,
         })
 
 
 # 讲师详情页
 class TeacherDetailView(View):
     def get(self, request, teacher_id):
-        current_page = "teacher"  # 用于高亮首页的“授课讲师”标签
 
         # 获取所有讲师
         all_teachers = Teacher.objects.all()
@@ -259,7 +265,6 @@ class TeacherDetailView(View):
         return render(request, 'teacher-detail.html', {
             'all_courses':all_courses,
             'sorted_teachers':sorted_teachers,
-            'current_page': current_page,
             'teacher':teacher,
             'has_fav_teacher':has_fav_teacher,
             'has_fav_org':has_fav_org,

@@ -54,5 +54,6 @@ urlpatterns = [
     # 导入各个app的urls.py
     url(r'^org/', include('organizations.urls', namespace='org')),    # 课程机构URL配置
     url(r'^course/', include('courses.urls', namespace='course')),    # 课程相关URL配置
+    url(r'^user/', include('users.urls', namespace='user')),  # 用户URL配置
 ]
 

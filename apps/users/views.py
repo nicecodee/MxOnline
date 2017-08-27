@@ -8,12 +8,16 @@ from django.contrib.auth.backends import ModelBackend  # 用于增加验证方�
 from django.db.models import Q  # 用于实现 “或” 逻辑运算
 from django.views.generic.base import View
 from django.contrib.auth.hashers import make_password  # 哈希加密
+from django.http import HttpResponse    # json的输入输出
+import json
+
 
 '''导入自定义模块'''
 from models import UserProfile, EmailVerifyRecord
 from forms import LoginForm, RegisterForm, ForgetPwdForm, PwdResetForm
 from utils.email_send import send_email_to_user
-
+from utils.mixin_utils import LoginRequiredMixin   #导入自定义的验证模块
+from forms import UploadImageForm
 
 
 
@@ -146,6 +150,51 @@ class PwdResetView(View):
             EmailVerifyRecord.objects.filter(code=code).delete()
             return render(request, 'login.html')
         return render(request, 'password_reset.html', {'pwdreset_form': pwdreset_form})
+
+
+
+# 用户个人信息
+class UserInfoView(LoginRequiredMixin, View):
+    def get(self, request):
+        return render(request, 'usercenter-info.html')
+
+
+
+# 用户修改头像
+class UserImageUploadView(LoginRequiredMixin, View):
+    def post(self, request):
+        image_form = UploadImageForm(request.POST, request.FILES, instance=request.user)   # 利用ModelForm的特性，直接获取一个实例
+        if image_form.is_valid():
+            # 直接存入数据库
+            image_form.save()
+            suc_dict = {'status':'success'}
+            return  HttpResponse(json.dumps(suc_dict), content_type="application/json")
+        else:
+           fail_dict = {'status':'fail'}
+           return HttpResponse(json.dumps(fail_dict), content_type="application/json")
+
+
+
+# 在个人中心更改密码（注：这里使用忘记密码后重置密码时同一个PwdResetForm）
+class UserPwdUpdateView(View):
+    def post(self, request):
+        pwd_update_form = PwdResetForm(request.POST)
+        if pwd_update_form.is_valid():
+            pwd1 = request.POST.get("password1", "")
+            pwd2 = request.POST.get("password2", "")
+            code = request.POST.get("reset_code", "")
+            if pwd1 != pwd2:
+                fail_dict = {'status': 'fail', 'msg':"密码不一致"}
+                return HttpResponse(json.dumps(fail_dict), content_type="application/json")
+            user = request.user
+            user.password = make_password(pwd2)
+            user.save()
+            suc_dict = {'status':'success'}
+            return  HttpResponse(json.dumps(suc_dict), content_type="application/json")
+        else:
+            return HttpResponse(json.dumps(pwd_update_form.errors), content_type="application/json")
+
+
 
 
 
