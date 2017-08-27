@@ -75,7 +75,7 @@
                     </div>
                     <div id="course_note">
                         <ul class="mod-post" id="comment-list">
-                            {% for comment in course_comments %}
+                            {% for comment in page_comments.object_list %}
                                 <li class="post-row">
                                     <div class="media">
                                         <span target="_blank"><img src='{{ MEDIA_URL }}{{ comment.user.image }}' width='40' height='40' /></span>
@@ -91,6 +91,30 @@
                                     </div>
                                 </li>
                             {% endfor %}
+                        </ul>
+                    </div>
+
+                    <!--评论分页-->
+                    <div class="pageturn">
+                        <ul class="pagelist">
+                            {% if page_comments.has_previous %}
+                                <li class="long"><a href="?{{ page_comments.previous_page_number.querystring }}">上一页</a></li>
+                            {% endif %}
+
+                            {% for page in page_comments.pages %}
+                                {% if page %}
+                                    {% ifequal page page_comments.number %}
+                                        <li class="active"><a href="?{{ page.querystring }}">{{ page }}</a></li>
+                                    {% else %}
+                                        <li><a href="?{{ page.querystring }}" class="page">{{ page }}</a></li>
+                                    {% endifequal %}
+                                {% else %}
+                                    <li class="none"><a href="">...</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if page_comments.has_next %}
+                                <li class="long"><a href="?{{ page_comments.next_page_number.querystring }}">下一页</a></li>
+                            {% endif %}
                         </ul>
                     </div>
 
@@ -113,12 +137,12 @@
                         <div class="box mb40">
                         <h4>讲师提示</h4>
                         <div class="teacher-info">
-                            <a href="/u/315464/courses?sort=publish" target="_blank">
+                            <a href="{% url 'org:teacher_detail' course.teacher.id %}" target="_blank">
                                 <img src="{{ MEDIA_URL }}{{ course.teacher.image }}" width=' 80'
                                 height='80' />
                             </a>
                             <span class="tit">
-                                <a href="/u/315464/courses?sort=publish" target="_blank">{{ course.teacher.name }}</a>
+                                <a href="{% url 'org:teacher_detail' course.teacher.id %}">{{ course.teacher.name }}</a>
                              </span>
                             <span class="job">{{ course.teacher.work_position }}</span>
                         </div>

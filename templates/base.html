@@ -7,7 +7,7 @@
 	<meta charset="UTF-8">
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" >
-	<title>{% block title %}萌学在线首页{% endblock %}</title>
+	<title>{% block title %}首页 - 萌学在线网{% endblock %}</title>
 
 	<link rel="stylesheet" type="text/css" href="{% static 'css/reset.css' %}">
 	<link rel="stylesheet" type="text/css" href="{% static 'css/animate.css' %}">
@@ -24,11 +24,11 @@
     <section class="headerwrap ">
     <header>
 		<div  class=" header">
- 			<div class="top">
-				<div class="wp">
-					<div class="fl"><p>服务电话：<b>33333333</b></p></div>
-					<!--登录后跳转-->
-
+            <div class="top">
+                <!--登录后跳转，显示个人中心和消息图标-->
+                {% if request.user.is_authenticated %}
+                    <div class="wp">
+                        <div class="fl"><p>服务电话：<b>33333333</b></p></div>
                         <div class="personal">
                             <dl class="user fr">
                                 <dd>bobby<img class="down fr" src="{% static 'images/top_down.png' %}"/></dd>
@@ -48,13 +48,19 @@
                                 </div>
                             </div>
                         </div>
-                        <a href="usercenter-message.html">
-                            <div class="msg-num"> <span id="MsgNum">0</span></div>
-                        </a>
-
-				</div>
-			</div>
-
+                    </div>
+                    <a href="usercenter-message.html">
+                        <div class="msg-num"> <span id="MsgNum">0</span></div>
+                    </a>
+                {#未登录时，显示注册与登录按钮#}
+                {% else %}
+                    <div class="wp">
+                        <div class="fl"><p>服务电话：<b>33333333</b></p></div>
+                        <a style="color:white" class="fr registerbtn" href="{% url 'register' %}">注册</a>
+                        <a style="color:white" class="fr loginbtn" href="{% url 'login' %}">登录</a>
+                    </div>
+                {% endif %}
+            </div>
             <div class="middle">
                 <div class="wp">
                     <a href="{% url 'index' %}"><img class="fl" src="{% static 'images/logo.jpg' %}"/></a>

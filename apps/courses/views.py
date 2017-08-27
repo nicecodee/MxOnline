@@ -146,12 +146,20 @@ class CourseCommentsView(LoginRequiredMixin, View):   # 同时继承了LoginRequ
         # 根据上述id，获取所有课程，并按点击量排序后取前3名
         related_courses = Course.objects.filter(id__in=course_ids).order_by("-click_num")[:3]
 
+        '''对课程评论进行分页'''
+        try:
+            page = request.GET.get('page', 1)
+        except PageNotAnInteger:
+            page = 1
+        p = Paginator(course_comments, 10, request=request)
+        page_comments = p.page(page)
+
         return render(request, 'course-comment.html', {
             'current_page': current_page,
             'course': course,
             'course_resources': course_resources,
-            'course_comments': course_comments,
             'related_courses': related_courses,
+            'page_comments':page_comments,
         })
 
 
