@@ -132,7 +132,7 @@ class CourseCommentsView(LoginRequiredMixin, View):   # 同时继承了LoginRequ
         '''获取课程评论'''
         course = Course.objects.get(id=int(course_id))  # 找出对应的课程
         course_resources = CourseResource.objects.filter(course=course)  # 找出该课程所有的资源
-        course_comments = CourseComments.objects.filter(course=course)  # 找出该课程所有的评论
+        course_comments = CourseComments.objects.filter(course=course).order_by("-add_time")  # 找出该课程所有的评论,按时间降序排序
 
         '''获取相关课程'''
         # 获取学过当前课程的所有用户的UserCourse记录
