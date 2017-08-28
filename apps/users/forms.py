@@ -46,3 +46,10 @@ class UploadImageForm(forms.ModelForm):
     class Meta:
         model = UserProfile     # 指定需要转换成form的model
         fields = ['image', ]     # 选择指定model中特定的字段
+
+
+# 用户信息表单(使用ModelForm)
+class UserInfoForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile     # 指定需要转换成form的model
+        fields = ['nickname', 'birday', 'gender', 'address', 'mobile']     # 选择指定model中特定的字段

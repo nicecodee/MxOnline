@@ -30,7 +30,7 @@ from MxOnline.settings import MEDIA_ROOT, MEDIA_URL
 
 
 '''自定义模块'''
-from users.views import LoginView, RegisterView, ActivateUserView, ForgetPwdView, \
+from users.views import LoginView, LogoutView, RegisterView, ActivateUserView, ForgetPwdView, \
     ShowPwdResetView, PwdResetView
 
 urlpatterns = [
@@ -42,6 +42,7 @@ urlpatterns = [
     url(r'^$', TemplateView.as_view(template_name="index.html"), name="index"),
 
     url(r'^login/$', LoginView.as_view(), name="login"),
+    url(r'^logout/$', LogoutView.as_view(), name="logout"),
     url(r'^register/$', RegisterView.as_view(), name="register"),
     url(r'^activate/(?P<activate_code>.*)/$', ActivateUserView.as_view(), name="user_activate"),
     url(r'^forgetpwd/$', ForgetPwdView.as_view(), name="forget_pwd"),

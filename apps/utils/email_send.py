@@ -28,9 +28,12 @@ def generate_random_str(randomlength=8):
 
 
 # 发送带有验证码的邮件
-def send_email_to_user(email, send_type="register"):     # 0 表示发送注册邮件，1 表示发送找回密码邮件
+def send_email_to_user(email, send_type="register"):     #默认为发送注册邮件
     email_record = EmailVerifyRecord()
-    code = generate_random_str(16)
+    if send_type == "update_email":
+        code = generate_random_str(4)
+    else:
+        code = generate_random_str(16)
     email_record.code = code
     email_record.email = email
     email_record.send_type = send_type
@@ -52,5 +55,10 @@ def send_email_to_user(email, send_type="register"):     # 0 表示发送注册�
         send_status = send_mail(email_title, email_body, EMAIL_FROM, [email])
         if send_status:
             pass
-
+    elif send_type == "update_email":
+        email_title = u"萌学在线网修改邮箱验证码"
+        email_body = u"您的修改邮箱验证码为: {0}".format(code)
+        send_status = send_mail(email_title, email_body, EMAIL_FROM, [email])
+        if send_status:
+            pass
 

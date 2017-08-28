@@ -98,6 +98,10 @@ class OrgHomeView(View):
     def get(self, request, org_id):
         course_org = CourseOrg.objects.get(id=int(org_id))  # 根据org_id查询对应的机构
 
+        # 机构点击数加1
+        course_org.click_num += 1
+        course_org.save()
+
         # 判断用户是否已收藏机构
         has_fav = False # 默认用户未收藏机构
         if request.user.is_authenticated():
@@ -183,6 +187,21 @@ class AddFavView(View):
         exist_records = UserFavorite.objects.filter(user=request.user, fav_id=int(fav_id), fav_type=int(fav_type))
         if exist_records:   #如果已经存在记录，说明用户要取消收藏
             exist_records.delete()
+
+            # 根据fav_type和fav_id找到对应的对象，令其收藏数减1
+            if int(fav_type) == 1:
+                course = Course.objects.get(id=int(fav_id))
+                course.fav_num -= 1
+                course.save()
+            if int(fav_type) == 2:
+                course_org = CourseOrg.objects.get(id=int(fav_id))
+                course_org.fav_num -= 1
+                course_org.save()
+            if int(fav_type) == 3:
+                teacher = Teacher.objects.get(id=int(fav_id))
+                teacher.fav_num -= 1
+                teacher.save()
+
             suc_dict = {'status': 'success', 'msg': u'收藏'}
             return HttpResponse(json.dumps(suc_dict), content_type="application/json")
         else:
@@ -192,6 +211,21 @@ class AddFavView(View):
                 user_fav.fav_id = int(fav_id)
                 user_fav.fav_type = fav_type
                 user_fav.save()
+
+                # 根据fav_type和fav_id找到对应的对象，令其收藏数加1
+                if int(fav_type) == 1:
+                    course = Course.objects.get(id=int(fav_id))
+                    course.fav_num += 1
+                    course.save()
+                if int(fav_type) == 2:
+                    course_org = CourseOrg.objects.get(id=int(fav_id))
+                    course_org.fav_num += 1
+                    course_org.save()
+                if int(fav_type) == 3:
+                    teacher = Teacher.objects.get(id=int(fav_id))
+                    teacher.fav_num += 1
+                    teacher.save()
+
                 suc_dict = {'status': 'success', 'msg': u'取消收藏'}
                 return HttpResponse(json.dumps(suc_dict), content_type="application/json")
             else:
@@ -248,6 +282,10 @@ class TeacherDetailView(View):
         sorted_teachers = all_teachers.order_by("-click_num")[:5]  # 按照点击量，获取排名前5的讲师
         # 根据teacher_id查出当前的讲师
         teacher = Teacher.objects.get(id=int(teacher_id))
+
+        # 讲师点击数加1
+        teacher.click_num += 1
+        teacher.save()
 
         # 判断用户是否已收藏讲师或机构
         has_fav_teacher = False  # 默认用户未收藏讲师

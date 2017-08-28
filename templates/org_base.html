@@ -45,13 +45,13 @@
                                 </dl>
                                 <div class="btn">
                                     <a class="personcenter fl" href="{% url 'user:user_info' %}">进入个人中心</a>
-                                    <a class="fr" href="/logout/">退出</a>
+                                    <a class="fr" href="{% url 'logout' %}">退出</a>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <a href="usercenter-message.html">
-                        <div class="msg-num"> <span id="MsgNum">0</span></div>
+                    <a href="{% url 'user:user_mymessage' %}">
+                        <div class="msg-num"> <span id="MsgNum">{{ request.user.get_unread_msgs }}</span></div>
                     </a>
                 {#未登录时，显示注册与登录按钮#}
                 {% else %}
@@ -67,7 +67,7 @@
             <img class="fl" style="width: 112px;height: 103px" src="{{ MEDIA_URL }}{{ course_org.image }}"/>
             <div class="head fl">
                 <h1>
-                    慕课网
+                    萌课网
                     <img src="{% static 'images/authentication.png' %}"/>
                     <img src="{% static 'images/gold.png' %}"/>
                 </h1>

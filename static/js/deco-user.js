@@ -12,7 +12,7 @@ function sendCodeChangeEmail($btn){
         cache: false,
         type: "get",
         dataType:'json',
-        url:"/users/sendemail_code/",
+        url:"/user/send_emailupdate_code/",
         data:$('#jsChangeEmailForm').serialize(),
         async: true,
         beforeSend:function(XMLHttpRequest){
@@ -23,7 +23,7 @@ function sendCodeChangeEmail($btn){
             if(data.email){
                 Dml.fun.showValidateError($('#jsChangeEmail'), data.email);
             }else if(data.status == 'success'){
-                Dml.fun.showErrorTips($('#jsChangeEmailTips'), "邮箱验证码已发送");
+                Dml.fun.showErrorTips($('#jsChangeEmailTips'), "邮箱验证码已发送至您的新邮箱, 请查收并完成验证");
             }else if(data.status == 'failure'){
                  Dml.fun.showValidateError($('#jsChangeEmail'), "邮箱验证码发送失败");
             }else if(data.status == 'success'){
@@ -50,7 +50,7 @@ var verify = verifyDialogSubmit(
         cache: false,
         type: 'post',
         dataType:'json',
-        url:"/users/update_email/ ",
+        url:"/user/email_update/ ",
         data:$('#jsChangeEmailForm').serialize(),
         async: true,
         beforeSend:function(XMLHttpRequest){
@@ -160,7 +160,7 @@ $(function(){
             cache: false,
             type: 'post',
             dataType:'json',
-            url:"/users/info/",
+            url:"/user/info/",
             data:$jsEditUserForm.serialize(),
             async: true,
             beforeSend:function(XMLHttpRequest){

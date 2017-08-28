@@ -102,6 +102,10 @@ class CourseInfoView(LoginRequiredMixin, View):    # 同时继承了LoginRequire
         course = Course.objects.get(id=int(course_id))  # 找出对应的课程
         course_resources = CourseResource.objects.filter(course=course)  # 找出该课程所有的资源
 
+        # 课程学习人数加1
+        course.students += 1
+        course.save()
+
         '''查询用户是否已关联(开始学习)该课程, 如果未关联，则为用户关联该课程'''
         is_learning = UserCourse.objects.filter(user=request.user, course=course)
         if not is_learning:

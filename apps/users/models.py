@@ -28,10 +28,17 @@ class UserProfile(AbstractUser):  # 继承django自带的AbstractUser表，同�
     def __unicode__(self):  # 如果是python3.x，就用 __str__(self)
         return self.username  # 这里的username是继承自AbstractUser的字段
 
+    # 获取用户的未读信息条数
+    def get_unread_msgs(self):
+        from operations.models import UserMessage   # 注意这个import语句不能放在本函数之外，否则会导致循环引用
+        return UserMessage.objects.filter(user=self.id, has_read=False).count()
+
+
 class EmailVerifyRecord(models.Model):
     code = models.CharField(max_length=20, verbose_name=u'验证码')
     email = models.EmailField(max_length=50, verbose_name=u'邮箱')
-    send_type = models.CharField(max_length=10, verbose_name=u"验证码类型", choices=(("register", u"注册"),("forget", u"找回密码")))
+    send_type = models.CharField(max_length=15, verbose_name=u"验证码类型", \
+                                 choices=(("register", u"注册"),("forget", u"找回密码"),("update_email", u"修改邮箱")))
     send_time = models.DateTimeField(default=datetime.now, verbose_name=u"发送时间")
 
     class Meta:

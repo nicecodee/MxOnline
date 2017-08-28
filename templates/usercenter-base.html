@@ -45,13 +45,13 @@
                                 </dl>
                                 <div class="btn">
                                     <a class="personcenter fl" href="{% url 'user:user_info' %}">进入个人中心</a>
-                                    <a class="fr" href="/logout/">退出</a>
+                                    <a class="fr" href="{% url 'logout' %}">退出</a>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <a href="usercenter-message.html">
-                        <div class="msg-num"> <span id="MsgNum">0</span></div>
+                    <a href="{% url 'user:user_mymessage' %}">
+                        <div class="msg-num"> <span id="MsgNum">{{ request.user.get_unread_msgs }}</span></div>
                     </a>
                 {#未登录时，显示注册与登录按钮#}
                 {% else %}
@@ -81,7 +81,7 @@
         <div class="wp">
             <ul  class="crumbs">
                 <li><a href="{% url 'index' %}">首页</a>></li>
-                <li><a href="/user/home/">个人中心</a>></li>
+                <li><a href="{% url 'user:user_info' %}">个人中心</a>></li>
                 <li>个人信息</li>
             </ul>
         </div>
@@ -90,77 +90,27 @@
 
 <section>
 	<div class="wp list personal_list">
-	<div class="left">
-        <ul>
-            <li class="active2"><a href="usercenter-info.html">个人资料</a></li>
-            <li ><a href="usercenter-mycourse.html">我的课程</a></li>
-            <li ><a href="usercenter-fav-course.html">我的收藏</a></li>
-            <li >
-                <a href="usercenter-message.html" style="position: relative;">
-                    我的消息
-                </a>
-            </li>
-        </ul>
-	</div>
+        <div class="left">
+            <ul>
+                <li class="{% if request.path|slice:'10' == '/user/info' %}active2{% endif %}">
+                    <a href="{% url 'user:user_info' %}">个人资料</a>
+                </li>
+                <li class="{% if request.path|slice:'14' == '/user/mycourse' %}active2{% endif %}">
+                    <a href="{% url 'user:user_mycourse' %}">我的课程</a>
+                </li>
+                <li class="{% if request.path|slice:'11' == '/user/myfav' %}active2{% endif %}">
+                    <a href="{% url 'user:user_myfav_org' %}">我的收藏</a>
+                </li>
+                <li class="{% if request.path|slice:'15' == '/user/mymessage' %}active2{% endif %}">
+                    <a href="{% url 'user:user_mymessage' %}" style="position: relative;">
+                        我的消息
+                    </a>
+                </li>
+            </ul>
+        </div>
 
-{% block right_content %}
-    <div class="right">
-		<div class="personal_des ">
-			<div class="head" style="border:1px solid #eaeaea;">
-				<h1>个人信息</h1>
-			</div>
-			<div class="inforcon">
-				<div class="left" style="width:242px;">
-                    <iframe id='frameFile' name='frameFile' style='display: none;'></iframe>
-                    <form class="clearfix" id="jsAvatarForm" enctype="multipart/form-data" autocomplete="off" method="post" action="/users/image/upload/" target='frameFile'>
-                        <label class="changearea" for="avatarUp">
-                            <span id="avatardiv" class="pic">
-                                <img width="100" height="100" class="js-img-show" id="avatarShow" src="{% static 'media/image/2016/12/default_big_14.png' %}"/>
-                            </span>
-                            <span class="fl upload-inp-box" style="margin-left:70px;">
-                                <span class="button btn-green btn-w100" id="jsAvatarBtn">修改头像</span>
-                                <input type="file" name="image" id="avatarUp" class="js-img-up"/>
-                            </span>
-                        </label>
-                    </form>
-                    <div style="border-top:1px solid #eaeaea;margin-top:30px;">
-                        <a class="button btn-green btn-w100" id="jsUserResetPwd" style="margin:80px auto;width:100px;">修改密码</a>
-                    </div>
-				</div>
-				<form class="perinform" id="jsEditUserForm" autocomplete="off">
-					<ul class="right">
-						<li>昵&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;称：
-                           <input type="text" name="nick_name" id="nick_name" value="django" maxlength="10">
-                            <i class="error-tips"></i>
-                        </li>
-						<li>生&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;日：
-                           <input type="text" id="birth_day" name="birday" value="2009年9月2日" readonly="readonly"/>
-                            <i class="error-tips"></i>
-						</li>
-						<li>性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：
-							<label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio"  name="gender" value="male" >男</label>
-							<label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="gender" value="female" checked="checked">女</label>
-						</li>
-						<li class="p_infor_city">地&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;址：
-                            <input type="text" name="address" id="address" placeholder="请输入你的地址" value="我来自火星" maxlength="10">
-						    <i class="error-tips"></i>
-                        </li>
-						<li>手&nbsp;&nbsp;机&nbsp;&nbsp;号：
-                            <input type="text" name="mobile" id="mobile" placeholder="请输入你的手机号码" value="" maxlength="10">
-                        </li>
-                        <li>邮&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;箱：
-                        	<input class="borderno" type="text" name="email" readonly="readonly" value="projectsedu@sina.com"/>
-                            <span class="green changeemai_btn">[修改]</span>
-                    	</li>
-						<li class="button heibtn">
-							<input type="button" id="jsEditUserBtn" value="保存">
-						</li>
-					</ul>
-				</form>
-			</div>
-		</div>
-	</div>
-{% endblock %}
+        {% block right_content %}
+        {% endblock %}
 
 	</div>
 </section>
@@ -239,6 +189,7 @@
             <div class="button">
                 <input class="changeemai_btn" id="jsChangeEmailBtn" type="button" value="完成"/>
             </div>
+            {% csrf_token %}
         </form>
     </div>
 
@@ -289,7 +240,9 @@
                 </div>
                 <div class="box">
                     <span class="word3">验证码</span>
-                    <input autocomplete="off" class="form-control-captcha find-password-captcha" id="find-password-captcha_1" name="captcha_f_1" placeholder="请输入验证码" type="text" /> <input class="form-control-captcha find-password-captcha" id="find-password-captcha_0" name="captcha_f_0" placeholder="请输入验证码" type="hidden" value="5f3c00e47fb1be12d2fd15b9a860711597721b3f" /> &nbsp;<img src="/captcha/image/5f3c00e47fb1be12d2fd15b9a860711597721b3f/" alt="captcha" class="captcha" />
+                    <input autocomplete="off" class="form-control-captcha find-password-captcha" id="find-password-captcha_1" name="captcha_f_1" placeholder="请输入验证码" type="text" />
+                    <input class="form-control-captcha find-password-captcha" id="find-password-captcha_0" name="captcha_f_0" placeholder="请输入验证码" type="hidden" value="5f3c00e47fb1be12d2fd15b9a860711597721b3f" /> &nbsp;
+                    <img src="/captcha/image/5f3c00e47fb1be12d2fd15b9a860711597721b3f/" alt="captcha" class="captcha" />
                 </div>
                 <div class="error btns" id="jsForgetTips"></div><!--忘记密码错误-->
                 <div class="button">
@@ -318,24 +271,23 @@
 
 <script type="text/javascript">
     $('.jsDeleteFav_course').on('click', function(){
-        var _this = $(this),
-            favid = _this.attr('data-favid');
-        alert(favid)
-        $.ajax({
-                cache: false,
-                type: "POST",
-                url: "/org/add_fav/",
-                data: {
-                    fav_type: 1,
-                    fav_id: favid,
-                    csrfmiddlewaretoken: '799Y6iPeEDNSGvrTu3noBrO4MBLv6enY'
-                },
-                async: true,
-                success: function(data) {
-                    Dml.fun.winReload();
-                }
-            });
-    });
+            var _this = $(this),
+                favid = _this.attr('data-favid');
+            $.ajax({
+                    cache: false,
+                    type: "POST",
+                    url: "{% url 'org:add_fav' %}",
+                    data: {
+                        fav_type: 1,
+                        fav_id: favid,
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    async: true,
+                    success: function(data) {
+                        Dml.fun.winReload();
+                    }
+                });
+        });
 
     $('.jsDeleteFav_teacher').on('click', function(){
             var _this = $(this),
@@ -343,11 +295,11 @@
             $.ajax({
                     cache: false,
                     type: "POST",
-                    url: "/org/add_fav/",
+                    url: "{% url 'org:add_fav' %}",
                     data: {
                         fav_type: 3,
                         fav_id: favid,
-                        csrfmiddlewaretoken: '799Y6iPeEDNSGvrTu3noBrO4MBLv6enY'
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
                     },
                     async: true,
                     success: function(data) {
@@ -363,11 +315,11 @@
             $.ajax({
                     cache: false,
                     type: "POST",
-                    url: "/org/add_fav/",
+                    url: "{% url 'org:add_fav' %}",
                     data: {
                         fav_type: 2,
                         fav_id: favid,
-                        csrfmiddlewaretoken: '799Y6iPeEDNSGvrTu3noBrO4MBLv6enY'
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
                     },
                     async: true,
                     success: function(data) {
