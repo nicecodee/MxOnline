@@ -11,6 +11,7 @@ from django.contrib.auth.hashers import make_password  # 哈希加密
 from django.http import HttpResponse, HttpResponseRedirect
 import json
 from django.shortcuts import render_to_response         # 分页
+from django.core.urlresolvers import reverse    # 用于页面重定向
 
 
 '''导入第三方模块'''
@@ -18,7 +19,7 @@ from pure_pagination import Paginator, EmptyPage, PageNotAnInteger  # 分页
 
 
 '''导入自定义模块'''
-from models import UserProfile, EmailVerifyRecord
+from models import UserProfile, EmailVerifyRecord, Banner
 from forms import LoginForm, RegisterForm, ForgetPwdForm, PwdResetForm
 from utils.email_send import send_email_to_user
 from utils.mixin_utils import LoginRequiredMixin  # 导入自定义的验证模块
@@ -40,6 +41,26 @@ class CustomBackend(ModelBackend):
 
         except Exception as e:
             return None
+
+# 首页
+class IndexView(View):
+    def get(self, request):
+        # 取出轮播图
+        all_banners = Banner.objects.all().order_by("index")
+        # 取出6个非轮播图的课程，在首页展示
+        courses = Course.objects.filter(is_banner=False)[:6]
+        # 取出3个轮播图的课程，在首页展示
+        banner_courses = Course.objects.filter(is_banner=True)[:3]
+        # 取出15个课程机构，在首页展示
+        course_orgs = CourseOrg.objects.all()[:15]
+
+        return render(request, 'index.html', {
+            'all_banners':all_banners,
+            'courses':courses,
+            'banner_courses':banner_courses,
+            'course_orgs':course_orgs,
+        })
+
 
 
 # 注册（重新定义View里面的get和post方法）
@@ -91,7 +112,8 @@ class LoginView(View):
             if user is not None:
                 if user.is_active:  # 用户必须存在，且用户已激活，才可登录
                     login(request, user)  # 调用auth自带的login方法（存入session）
-                    return render(request, 'index.html', {})
+                    # 用户登录后，重定向到首页（注意不能用render，否则首页动态的数据无法加载）
+                    return HttpResponseRedirect(reverse('index'))
                 else:
                     return render(request, 'login.html', {'msg': '用户未激活!'})
             else:
@@ -104,8 +126,8 @@ class LogoutView(LoginRequiredMixin, View):
     def get(self, request):
         logout(request)
         # 用户退出后，重定向到首页（注：重定向不能用 render）
-        from django.core.urlresolvers import reverse
         return HttpResponseRedirect(reverse('index'))
+
 
 
 # 激活用户
@@ -349,6 +371,22 @@ class MyMessageView(LoginRequiredMixin, View):
 
 
 '''自定义视图函数'''
+
+# 全局404处理函数
+def page_not_found(request):
+    from django.shortcuts import render_to_response
+    response = render_to_response('404.html', {})
+    response.status_code = 404
+    return response
+
+
+# 全局500处理函数
+def page_error(request):
+    from django.shortcuts import render_to_response
+    response = render_to_response('500.html', {})
+    response.status_code = 500
+    return response
+
 
 # 登录
 # 由于我们选择用类而不是函数来实现登录的逻辑，因此以下函数代码弃用

@@ -44,12 +44,11 @@
 {% block content %}
     <div id="main">
         {#---video.js 插件--start--#}
-        <div style="width:1200px;height:675px; margin-left: 340px">
+        <div style="width:1200px;height:675px; MARGIN-RIGHT: auto; MARGIN-LEFT: auto;">
             <video id="example_video_1" class="video-js vjs-default-skin" controls preload="none" width="1200"
                    poster="http://video-js.zencoder.com/oceans-clip.png' %}"
                    data-setup="{}">
-                <source src="{{ video.url }}"
-                        type='video/mp4'>
+                <source src="{{ video.url }}" type='video/mp4'>
             </video>
         </div>
         {#---video.js 插件--end--#}

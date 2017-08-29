@@ -32,9 +32,10 @@ sys.path.insert(0, os.path.join(BASE_DIR, 'extra_apps'))
 SECRET_KEY = 'o7nbupx9rfrqmqg7lk29a*hp-&()y460_lx7orzbo9vq!e6s9h'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+# 当 DEBUG = False 时，必须配置 ALLOWED_HOSTS
+ALLOWED_HOSTS = ['*']   # 允许所有访问
 
 # Application definition
 
@@ -170,6 +171,12 @@ EMAIL_USE_TLS = False
 # 设置文件上传的路径
 MEDIA_URL = '/uploads/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
+
+
+# 设置静态文件路径（当settings.py设置DEBUG = False 时）
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+
 
 # 设置分页（利用第三方库： django-pure-pagination）
 PAGINATION_SETTINGS = {
