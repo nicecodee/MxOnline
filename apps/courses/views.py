@@ -81,10 +81,10 @@ class CourseDetailView(View):
         has_fav_org = False  # 默认用户未收藏机构
         if request.user.is_authenticated():  # 判断用户是否登录
             # 判断用户是否收藏课程
-            if UserFavorite.objects.filter(user=request.user, fav_id=course.id, fav_type=1):
+            if UserFavorite.objects.filter(user=request.user, fav_id=course.id, fav_type="course"):
                 has_fav_course = True
             # 判断用户是否收藏机构
-            if UserFavorite.objects.filter(user=request.user, fav_id=course.course_org.id, fav_type=2):
+            if UserFavorite.objects.filter(user=request.user, fav_id=course.course_org.id, fav_type="org"):
                 has_fav_org = True
 
         return render(request, 'course-detail.html', {

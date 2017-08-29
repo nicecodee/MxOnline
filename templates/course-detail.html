@@ -190,11 +190,11 @@
         }
 
         $('#jsLeftBtn').on('click', function(){
-            add_fav($(this), {{ course.id }}, 1);
+            add_fav($(this), {{ course.id }}, 'course');
         });
 
         $('#jsRightBtn').on('click', function(){
-            add_fav($(this), {{ course.course_org.id }}, 2);
+            add_fav($(this), {{ course.course_org.id }}, 'org');
         });
     </script>
 {% endblock %}

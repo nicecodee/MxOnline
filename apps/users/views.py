@@ -275,7 +275,7 @@ class MyFavOrgView(LoginRequiredMixin, View):
         # 定义一个空列表，用于存放我收藏的机构
         myfav_orgs = []
         # 从数据库中，找到我收藏的机构的所有记录，这些记录中我们需要的是fav_id，即机构的id
-        fav_org_records = UserFavorite.objects.filter(user=request.user, fav_type=2)
+        fav_org_records = UserFavorite.objects.filter(user=request.user, fav_type="org")
         # 遍历上述记录，通过fav_id 取得所有机构的对象，并存入myfav_orgs列表
         for record in fav_org_records:
             org_id = record.fav_id
@@ -293,7 +293,7 @@ class MyFavTeacherView(LoginRequiredMixin, View):
         # 定义一个空列表，用于存放我收藏的讲师
         myfav_teachers = []
         # 从数据库中，找到我收藏的讲师的所有记录，这些记录中我们需要的是fav_id，即讲师的id
-        fav_teacher_records = UserFavorite.objects.filter(user=request.user, fav_type=3)
+        fav_teacher_records = UserFavorite.objects.filter(user=request.user, fav_type="teacher")
         # 遍历上述记录，通过fav_id 取得所有讲师的对象，并存入myfav_teachers列表
         for record in fav_teacher_records:
             teacher_id = record.fav_id
@@ -310,7 +310,7 @@ class MyFavCourseView(LoginRequiredMixin, View):
         # 定义一个空列表，用于存放我收藏的讲师
         myfav_courses = []
         # 从数据库中，找到我收藏的课程的所有记录，这些记录中我们需要的是fav_id，即课程的id
-        fav_course_records = UserFavorite.objects.filter(user=request.user, fav_type=1)
+        fav_course_records = UserFavorite.objects.filter(user=request.user, fav_type="course")
         # 遍历上述记录，通过fav_id 取得所有课程的对象，并存入myfav_courses列表
         for record in fav_course_records:
             course_id = record.fav_id

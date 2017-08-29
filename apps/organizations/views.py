@@ -105,7 +105,7 @@ class OrgHomeView(View):
         # 判断用户是否已收藏机构
         has_fav = False # 默认用户未收藏机构
         if request.user.is_authenticated():
-            if UserFavorite.objects.filter(user=request.user, fav_id=course_org.id, fav_type=2):
+            if UserFavorite.objects.filter(user=request.user, fav_id=course_org.id, fav_type="org"):
                 has_fav = True
 
         all_courses = course_org.course_set.all()[:3]   # 获取该机构的前3个课程
@@ -126,7 +126,7 @@ class OrgCourseView(View):
         # 判断用户是否已收藏机构
         has_fav = False # 默认用户未收藏机构
         if request.user.is_authenticated():
-            if UserFavorite.objects.filter(user=request.user, fav_id=course_org.id, fav_type=2):
+            if UserFavorite.objects.filter(user=request.user, fav_id=course_org.id, fav_type="org"):
                 has_fav = True
 
         all_courses = course_org.course_set.all()   # 获取该机构的课程
@@ -146,7 +146,7 @@ class OrgDescView(View):
         # 判断用户是否已收藏机构
         has_fav = False # 默认用户未收藏机构
         if request.user.is_authenticated():
-            if UserFavorite.objects.filter(user=request.user, fav_id=course_org.id, fav_type=2):
+            if UserFavorite.objects.filter(user=request.user, fav_id=course_org.id, fav_type="org"):
                 has_fav = True
 
         return render(request, 'org-detail-desc.html', {
@@ -163,7 +163,7 @@ class OrgTeacherView(View):
         # 判断用户是否已收藏机构
         has_fav = False # 默认用户未收藏机构
         if request.user.is_authenticated():
-            if UserFavorite.objects.filter(user=request.user, fav_id=course_org.id, fav_type=2):
+            if UserFavorite.objects.filter(user=request.user, fav_id=course_org.id, fav_type="org"):
                 has_fav = True
 
         all_teachers = course_org.teacher_set.all()   # 获取该机构的讲师
@@ -178,26 +178,26 @@ class OrgTeacherView(View):
 class AddFavView(View):
     def post(self, request):
         fav_id = request.POST.get("fav_id", 0)  #默认值为0而不是空字符串，是为了避免filter查询时空字符串抛出异常
-        fav_type = request.POST.get("fav_type", 0)
+        fav_type = request.POST.get("fav_type", "")
 
         if not request.user.is_authenticated():     # 验证用户是否登录
             fail_dict = {'status': 'fail', 'msg': u'用户未登录'}
             return HttpResponse(json.dumps(fail_dict), content_type="application/json")
 
-        exist_records = UserFavorite.objects.filter(user=request.user, fav_id=int(fav_id), fav_type=int(fav_type))
+        exist_records = UserFavorite.objects.filter(user=request.user, fav_id=int(fav_id), fav_type=fav_type)
         if exist_records:   #如果已经存在记录，说明用户要取消收藏
             exist_records.delete()
 
             # 根据fav_type和fav_id找到对应的对象，令其收藏数减1
-            if int(fav_type) == 1:
+            if fav_type == "course":
                 course = Course.objects.get(id=int(fav_id))
                 course.fav_num -= 1
                 course.save()
-            if int(fav_type) == 2:
+            if fav_type == "org":
                 course_org = CourseOrg.objects.get(id=int(fav_id))
                 course_org.fav_num -= 1
                 course_org.save()
-            if int(fav_type) == 3:
+            if fav_type == "teacher":
                 teacher = Teacher.objects.get(id=int(fav_id))
                 teacher.fav_num -= 1
                 teacher.save()
@@ -206,22 +206,22 @@ class AddFavView(View):
             return HttpResponse(json.dumps(suc_dict), content_type="application/json")
         else:
             user_fav = UserFavorite()
-            if int(fav_id) > 0 and int(fav_type) > 0:
+            if int(fav_id) > 0 and fav_type:
                 user_fav.user = request.user
                 user_fav.fav_id = int(fav_id)
                 user_fav.fav_type = fav_type
                 user_fav.save()
 
                 # 根据fav_type和fav_id找到对应的对象，令其收藏数加1
-                if int(fav_type) == 1:
+                if fav_type == 'course':
                     course = Course.objects.get(id=int(fav_id))
                     course.fav_num += 1
                     course.save()
-                if int(fav_type) == 2:
+                if fav_type == "org":
                     course_org = CourseOrg.objects.get(id=int(fav_id))
                     course_org.fav_num += 1
                     course_org.save()
-                if int(fav_type) == 3:
+                if fav_type == "teacher":
                     teacher = Teacher.objects.get(id=int(fav_id))
                     teacher.fav_num += 1
                     teacher.save()
@@ -292,10 +292,10 @@ class TeacherDetailView(View):
         has_fav_org = False      # 默认用户未收藏机构
         if request.user.is_authenticated():  # 判断用户是否登录
             # 判断用户是否收藏讲师
-            if UserFavorite.objects.filter(user=request.user, fav_id=teacher.id, fav_type=3):
+            if UserFavorite.objects.filter(user=request.user, fav_id=teacher.id, fav_type="teacher"):
                 has_fav_teacher = True
             # 判断用户是否收藏机构
-            if UserFavorite.objects.filter(user=request.user, fav_id=teacher.org.id, fav_type=2):
+            if UserFavorite.objects.filter(user=request.user, fav_id=teacher.org.id, fav_type="org"):
                 has_fav_org = True
 
         # 获取该讲师的所有课程

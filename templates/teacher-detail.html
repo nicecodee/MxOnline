@@ -172,11 +172,11 @@
         }
 
         $('#jsLeftBtn').on('click', function () {
-            add_fav($(this), {{ teacher.id }}, 3);
+            add_fav($(this), {{ teacher.id }}, 'teacher');
         });
 
         $('#jsRightBtn').on('click', function () {
-            add_fav($(this), {{ teacher.org.id }}, 2);
+            add_fav($(this), {{ teacher.org.id }}, 'org');
         });
     </script>
 {% endblock %}
