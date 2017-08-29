@@ -26,7 +26,7 @@ from django.views.static import serve        # 用于处理静态文件
 '''第三方模块'''
 # 引入xadmin
 import xadmin
-from MxOnline.settings import MEDIA_ROOT, STATIC_ROOT
+from MxOnline.settings import MEDIA_ROOT    #, STATIC_ROOT
 
 
 '''自定义模块'''
@@ -54,7 +54,7 @@ urlpatterns = [
     url(r'^uploads/(?P<path>.*)$', serve, {"document_root":MEDIA_ROOT}),
 
     # 处理静态文件（当settings.py设置DEBUG = False 时）
-    url(r'^static/(?P<path>.*)$', serve, {"document_root":STATIC_ROOT}),
+    # url(r'^static/(?P<path>.*)$', serve, {"document_root":STATIC_ROOT}),
 
     # 导入各个app的urls.py
     url(r'^org/', include('organizations.urls', namespace='org')),    # 课程机构URL配置

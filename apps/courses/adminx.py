@@ -11,7 +11,9 @@ class CourseAdmin(object):   # 注意这里不能继承admin.ModelAdmin
     list_display = ('name', 'desc', 'course_org', 'teacher', 'degree', 'learn_times', 'students', 'fav_num', 'click_num', 'add_time')  # 自定义后台显示的列
     search_fields = ('name', 'desc', 'course_org', 'teacher', 'degree', 'learn_times', 'students', 'fav_num', 'click_num')   # 自定义后台搜索字段(不要把Datetime属性的add_time字段放在这里，否则搜索中文时会报错）
     list_filter = ('name', 'desc', 'course_org', 'teacher', 'degree', 'learn_times', 'students', 'fav_num', 'click_num', 'add_time')    # 自定义后台过滤字段
-
+    ordering = ["-click_num"]   # 默认按照课程点击数排序
+    readonly_fields = ['click_num', 'fav_num']      # 设置只读的字段
+    exclude = ['add_time']   # 设置不需要在页面显示的字段
 
 xadmin.site.register(Course, CourseAdmin)
 
